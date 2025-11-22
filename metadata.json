@@ -1,0 +1,5 @@
+{
+  "name": "FotoCrime",
+  "description": "Strumento professionale di analisi forense assistita da IA per l'esame geometrico e visivo di scene del crimine.",
+  "requestFramePermissions": []
+}
