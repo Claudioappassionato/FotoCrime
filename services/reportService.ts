@@ -58,19 +58,14 @@ export const downloadDOCX = (content: string, filename: string = 'Rapporto_Foren
       </xml>
       <style>
         /* Reset CSS per Word */
-        body { font-family: 'Courier New', Courier, monospace; font-size: 12.0pt; }
-        
-        /* Stile specifico per il contenuto del report */
-        .report-content {
-           font-family: 'Courier New', Courier, monospace !important;
-           font-size: 12.0pt !important;
-           white-space: pre-wrap; /* Mantiene gli a capo */
-           line-height: 1.15;
-        }
-        
         @page {
-          mso-page-orientation: portrait;
-          margin: 2.54cm 2.54cm 2.54cm 2.54cm;
+            size: 21cm 29.7cm;
+            margin: 2.54cm 2.54cm 2.54cm 2.54cm;
+            mso-page-orientation: portrait;
+        }
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 12.0pt; 
         }
       </style>
     </head>
@@ -84,8 +79,12 @@ export const downloadDOCX = (content: string, filename: string = 'Rapporto_Foren
         <hr size="1" color="#000000" />
     </div>
 
-    <!-- Usiamo un DIV invece di PRE per evitare lo stile 'HTML Preformatted' di Word che spesso è sballato -->
-    <div class="report-content" style="font-family: 'Courier New', Courier, monospace; font-size: 12.0pt;">`;
+    <!-- 
+      IMPORTANTE: 
+      1. Usiamo style inline ESPLICITI su questo div per forzare Word.
+      2. white-space: pre-wrap mantiene l'impaginazione del testo raw.
+    -->
+    <div style="font-family: 'Courier New', Courier, monospace; font-size: 12.0pt; line-height: 1.2; white-space: pre-wrap;">`;
     
   const postHtml = "</div></body></html>";
   

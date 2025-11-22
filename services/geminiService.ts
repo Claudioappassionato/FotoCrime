@@ -64,7 +64,7 @@ const PROMPTS: Record<AnalysisType, string> = {
     Struttura obbligatoria del documento:
     
     1. INTESTAZIONE TECNICA
-       - Data e ora analisi (usa il timestamp attuale)
+       - Data e ora analisi: [INSERISCI DATA FORNITA NEL CONTESTO]
        - ID Riferimento: [Genera un ID alfanumerico casuale]
        - Classificazione Immagine: (es. Macro, Grandangolo, Dettaglio)
     
@@ -99,6 +99,21 @@ export const analyzeImage = async (
   try {
     const modelId = 'gemini-2.5-flash'; 
 
+    // Calcoliamo la data corrente per iniettarla nel prompt
+    const now = new Date().toLocaleString('it-IT', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+
+    // Aggiungiamo il contesto temporale esplicito al prompt
+    const dateContext = `\n\n[PARAMETRI TEMPORALI SISTEMA]\nDATA CORRENTE REALE: ${now}.\nUsa TASSATIVAMENTE questa data nell'intestazione del rapporto. NON inventare date passate o future.`;
+    
+    const finalPrompt = PROMPTS[analysisType] + dateContext;
+
     const response = await ai.models.generateContent({
       model: modelId,
       contents: {
@@ -110,14 +125,14 @@ export const analyzeImage = async (
             },
           },
           {
-            text: PROMPTS[analysisType],
+            text: finalPrompt,
           },
         ],
       },
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
         temperature: 0.1, 
-        maxOutputTokens: 8192, // Aumentato drasticamente per evitare troncamenti nei report lunghi
+        maxOutputTokens: 8192,
         safetySettings: [
           { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
           { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
@@ -128,11 +143,9 @@ export const analyzeImage = async (
       },
     });
 
-    // Gestione specifica per finishReason
     if (response.candidates && response.candidates.length > 0) {
         const candidate = response.candidates[0];
         
-        // Se il motivo è STOP (tutto ok) o MAX_TOKENS (testo lungo), restituiamo il testo.
         if (candidate.finishReason === 'STOP' || candidate.finishReason === 'MAX_TOKENS') {
             let text = response.text || "";
             if (candidate.finishReason === 'MAX_TOKENS') {
@@ -142,9 +155,8 @@ export const analyzeImage = async (
             return text;
         }
         
-        // Se il motivo è SAFETY, allora è un vero blocco
         if (candidate.finishReason === 'SAFETY') {
-             return `[ACCESSO NEGATO] Il protocollo di sicurezza ha impedito l'analisi. L'immagine contiene elementi classificati come "High Severity" (Violenza estrema o Gore non consentito nemmeno in ambito forense simulato).`;
+             return `[ACCESSO NEGATO] Il protocollo di sicurezza ha impedito l'analisi. L'immagine contiene elementi classificati come "High Severity".`;
         }
 
         return `[ERRORE SISTEMA] Analisi terminata con motivo imprevisto: ${candidate.finishReason}`;
