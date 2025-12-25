@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AnalysisType } from '../types';
-import { Microscope, Layers, Ruler, Target, Loader2, ChevronRight, FileText, Download, FileCheck } from 'lucide-react';
+import { Microscope, Layers, Ruler, Target, Loader2, ChevronRight, FileText, Download, FileCheck, MessageSquarePlus } from 'lucide-react';
 import { downloadPDF, downloadDOCX } from '../services/reportService';
 
 interface AnalysisPanelProps {
   selectedMode: AnalysisType | null;
-  onModeSelect: (mode: AnalysisType) => void;
+  onModeSelect: (mode: AnalysisType, customInstruction?: string) => void;
   isAnalyzing: boolean;
   result: string | null;
   hasImage: boolean;
@@ -18,6 +18,7 @@ const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
   result,
   hasImage 
 }) => {
+  const [customInstruction, setCustomInstruction] = useState("");
 
   const modes = [
     {
@@ -56,7 +57,7 @@ const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="mb-6">
+      <div className="mb-4 shrink-0">
         <h2 className="text-sm font-bold text-cyan-500 uppercase tracking-widest font-mono mb-4 flex items-center gap-2">
           <div className="w-2 h-2 bg-cyan-500 rotate-45"></div>
           Protocolli di Analisi
@@ -66,7 +67,7 @@ const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
           {modes.map((mode) => (
             <button
               key={mode.id}
-              onClick={() => onModeSelect(mode.id)}
+              onClick={() => onModeSelect(mode.id, customInstruction)}
               disabled={!hasImage || isAnalyzing}
               className={`relative text-left p-3 rounded-lg border transition-all duration-200 group
                 ${selectedMode === mode.id 
@@ -91,9 +92,9 @@ const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
 
         {/* Full Report Button */}
         <button
-          onClick={() => onModeSelect(AnalysisType.FULL_REPORT)}
+          onClick={() => onModeSelect(AnalysisType.FULL_REPORT, customInstruction)}
           disabled={!hasImage || isAnalyzing}
-          className={`w-full flex items-center justify-center gap-3 p-3 rounded-lg border border-dashed transition-all duration-300
+          className={`w-full flex items-center justify-center gap-3 p-3 rounded-lg border border-dashed transition-all duration-300 mb-4
             ${selectedMode === AnalysisType.FULL_REPORT 
               ? 'bg-cyan-950/30 border-cyan-500 text-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.1)]' 
               : 'bg-slate-900/20 border-slate-700 text-slate-400 hover:border-cyan-500/50 hover:text-cyan-400'}
@@ -107,6 +108,21 @@ const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
            )}
            <span className="font-mono font-bold uppercase tracking-wider text-sm">Genera Dossier Forense Completo</span>
         </button>
+
+        {/* Custom Instruction Input */}
+        <div>
+             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono flex items-center gap-2 mb-2">
+                <MessageSquarePlus className="w-3 h-3" />
+                Note Operative Aggiuntive (Opzionale)
+             </label>
+             <textarea
+                value={customInstruction}
+                onChange={(e) => setCustomInstruction(e.target.value)}
+                placeholder="Inserisci istruzioni specifiche per l'analisi (es. 'Concentrati sulla ferita alla gamba', 'Ignora lo sfondo')..."
+                className="w-full bg-slate-950/50 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 font-mono placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-900/50 transition-all resize-none h-16"
+                disabled={isAnalyzing}
+             />
+        </div>
       </div>
 
       <div className="flex-1 flex flex-col min-h-0">

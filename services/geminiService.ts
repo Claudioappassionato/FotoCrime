@@ -94,7 +94,8 @@ const PROMPTS: Record<AnalysisType, string> = {
 export const analyzeImage = async (
   base64Data: string,
   mimeType: string,
-  analysisType: AnalysisType
+  analysisType: AnalysisType,
+  customInstruction?: string
 ): Promise<string> => {
   try {
     const modelId = 'gemini-2.5-flash'; 
@@ -112,7 +113,12 @@ export const analyzeImage = async (
     // Aggiungiamo il contesto temporale esplicito al prompt
     const dateContext = `\n\n[PARAMETRI TEMPORALI SISTEMA]\nDATA CORRENTE REALE: ${now}.\nUsa TASSATIVAMENTE questa data nell'intestazione del rapporto. NON inventare date passate o future.`;
     
-    const finalPrompt = PROMPTS[analysisType] + dateContext;
+    // Integrazione delle istruzioni personalizzate
+    const instructionContext = customInstruction 
+        ? `\n\n[NOTA OPERATIVA AGGIUNTIVA DALL'UTENTE]\nL'utente ha aggiunto la seguente richiesta specifica per questa analisi: "${customInstruction}".\nIntegra questa richiesta nell'analisi mantenendo il rigore scientifico e tecnico.` 
+        : "";
+
+    const finalPrompt = PROMPTS[analysisType] + instructionContext + dateContext;
 
     const response = await ai.models.generateContent({
       model: modelId,

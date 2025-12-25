@@ -17,7 +17,7 @@ const App: React.FC = () => {
     setSelectedMode(null);
   };
 
-  const handleModeSelect = async (mode: AnalysisType) => {
+  const handleModeSelect = async (mode: AnalysisType, customInstruction?: string) => {
     if (!currentImage || isAnalyzing) return;
 
     setSelectedMode(mode);
@@ -25,7 +25,7 @@ const App: React.FC = () => {
     setResult(null);
 
     try {
-      const text = await analyzeImage(currentImage.base64, currentImage.mimeType, mode);
+      const text = await analyzeImage(currentImage.base64, currentImage.mimeType, mode, customInstruction);
       setResult(text);
     } catch (error) {
       console.error(error);
