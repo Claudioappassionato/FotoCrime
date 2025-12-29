@@ -3,26 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FotoCrime - Analisi Forense</title>
+    <title>PetraScan - Analisi Arte Rupestre</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
+              mono: ['Courier Prime', 'monospace'],
             },
             colors: {
-              slate: {
+              stone: {
+                750: '#2d2b28',
+                850: '#1c1a18',
+                950: '#0f0e0d',
+              },
+              amber: { // Ocra rossa / Pigmenti
+                450: '#d97706',
+                600: '#d97706', 
+              },
+              slate: { 
                 850: '#1e293b',
                 900: '#0f172a',
-                950: '#020617',
-              },
-              cyan: {
-                450: '#22d3ee',
-                950: '#083344',
               }
             }
           },
@@ -30,23 +34,20 @@
       }
     </script>
     <style>
-      body {
-        background-color: #020617;
-        color: #e2e8f0;
-      }
-      /* Custom scrollbar for a technical feel */
+      /* Custom Scrollbar for dark theme */
       ::-webkit-scrollbar {
         width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #0f172a;
+        background: #1c1917; 
       }
       ::-webkit-scrollbar-thumb {
-        background: #334155;
+        background: #44403c; 
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #475569;
+        background: #57534e; 
       }
     </style>
   <script type="importmap">
@@ -55,14 +56,13 @@
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "jspdf": "https://aistudiocdn.com/jspdf@^2.5.1"
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
   }
 }
 </script>
 </head>
-  <body>
+  <body class="bg-stone-950 text-stone-200 antialiased overflow-hidden selection:bg-amber-900 selection:text-amber-100">
     <div id="root"></div>
   </body>
 </html>

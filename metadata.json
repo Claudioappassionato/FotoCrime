@@ -1,5 +1,7 @@
 {
-  "name": "FotoCrime",
-  "description": "Strumento professionale di analisi forense assistita da IA per l'esame geometrico e visivo di scene del crimine.",
-  "requestFramePermissions": []
+  "name": "PetraScan-Analisi-Arte-Rupestre",
+  "description": "Suite professionale per l'analisi di arte rupestre e contesti megalitici con IA",
+  "requestFramePermissions": [
+    "camera"
+  ]
 }

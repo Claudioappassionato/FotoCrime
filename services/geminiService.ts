@@ -1,176 +1,139 @@
 import { GoogleGenAI } from "@google/genai";
-import { AnalysisType } from '../types';
+import { AnalysisMode } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to convert file to Base64
+const fileToGenerativePart = async (file: File): Promise<{ inlineData: { data: string; mimeType: string } }> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = (reader.result as string).split(',')[1];
+      resolve({
+        inlineData: {
+          data: base64String,
+          mimeType: file.type,
+        },
+      });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
 
 const SYSTEM_INSTRUCTION = `
-Sei "FotoCrime", un assistente IA specializzato nell'analisi tecnica e geometrica di immagini forensi e scene del crimine.
-Il tuo obiettivo è puramente SCIENTIFICO e DESCRITTIVO.
-NON sei un investigatore. NON formuli ipotesi su colpevolezza, moventi, intenzioni o dinamiche narrative.
-NON censurare dettagli tecnici visivi (es. sangue, ferite, armi) necessari per l'analisi geometrica.
-Usa un linguaggio tecnico, professionale, distaccato e asettico (Italiano).
+Identità: Sei un Archeologo Preistorico Senior, specializzato in Arte Rupestre, Petrografia e Antropologia Culturale.
 
-Il tuo sguardo è geometrico: registra angoli, proporzioni, direzioni di caduta. Non interpreti emozioni.
-Struttura le tue risposte come rapporti tecnici ufficiali per un tribunale o un esperto forense.
+OBIETTIVO:
+Analizzare le immagini fornite (petroglifi, pitture rupestri, megaliti, manufatti litici) per generare un report scientifico dettagliato per catalogazione museale o accademica.
+
+METODOLOGIA:
+1.  **Osservazione Fenomenologica**: Descrivi la morfologia della roccia e dei segni prima di interpretarli.
+2.  **Correlazione Multi-Angolare**: Se vengono fornite più immagini, usale per comprendere la tridimensionalità, le incisioni poco profonde (luce radente) e il contesto.
+3.  **Terminologia Accademica**: Usa termini specifici (es. "picchiettatura", "filiforme", "coppella", "antropomorfo", "patina desertica", "martellina").
+4.  **Prudenza Interpretativa**: Distingui sempre tra elementi naturali (diaclasi, fratture) ed elementi antropici.
+
+TONO:
+Accademico, analitico, rigoroso, ma accessibile a ricercatori.
 `;
 
-const PROMPTS: Record<AnalysisType, string> = {
-  [AnalysisType.ANOMALIES]: `
-    Esegui un Riconoscimento di Elementi Visivi Anomali.
+const PROMPTS: Record<AnalysisMode, string> = {
+  [AnalysisMode.FULL_REPORT]: `
+    Genera una "Scheda di Rilievo Archeologico" completa basata sulle immagini.
     
-    Obiettivo: Distinguere ciò che dovrebbe essere da ciò che devia.
-    1. Misura variazioni di colore, consistenza e distribuzione sulla superficie.
-    2. Identifica macchie, impronte o oggetti fuori posto rispetto all'ordine apparente.
-    3. Non interpretare cosa è accaduto; elenca solamente le differenze visive (anomalie) rispetto al contesto ambientale.
-    
-    Output richiesto: Elenco puntato delle anomalie visive con descrizione della loro deviazione geometrica o cromatica.
+    STRUTTURA DEL REPORT:
+    1. **Descrizione del Supporto**: Tipo di roccia apparente (arenaria, scisto, granito), fratturazione, orientamento superficie.
+    2. **Inventario dei Segni**: Elenco sistematico delle figure visibili (antropomorfi, zoomorfi, geometrici, coppelle).
+    3. **Stato di Conservazione**: Patine, licheni, sfaldamento, erosione.
+    4. **Correlazione Immagini**: Se presenti più foto, descrivi come le diverse angolazioni/luci rivelano dettagli differenti (es. luce radente).
+    5. **Ipotesi Cronologica Preliminare**: Basata sullo stile (es. Neolitico, Età del Bronzo, Età del Ferro) con le dovute cautele.
   `,
-  [AnalysisType.SUBSTANCES]: `
-    Esegui una Classificazione Generica delle Sostanze.
+  [AnalysisMode.SYMBOLOGY]: `
+    Focus Analitico: **Simbologia e Iconografia**.
     
-    Obiettivo: Identificare "tipi" di materiale senza analisi chimica.
-    1. Distingui la natura fisica apparente: liquido, polvere, tessuto, solido.
-    2. Non determinare la natura biologica (es. NON dire "è sicuramente sangue", ma "fluido viscoso rosso scuro compatibile con sostanza ematica").
-    3. Descrivi come la sostanza interagisce con la superficie (assorbimento, pooling, essiccazione).
-    
-    Output richiesto: Analisi dei materiali visibili basata su texture, riflettività e stato fisico.
+    ISTRUZIONI:
+    - Isola e descrivi ogni singolo grafema.
+    - Cerca ricorrenze di pattern noti (es. "Oranti", "Cervi", "Labirinti", "Spirali", "Coppelle").
+    - Analizza la sintassi della scena: le figure interagiscono? C'è sovrapposizione (palinsesto)?
+    - Se ci sono più foto, usale per confermare la forma dei simboli meno chiari.
+    - Distingui attentamente tra pareidolia (forme casuali della roccia) e segni intenzionali.
   `,
-  [AnalysisType.SPATIAL]: `
-    Esegui una Ricostruzione Spaziale.
+  [AnalysisMode.TECHNIQUE_GEO]: `
+    Focus Analitico: **Tecnologia di Esecuzione e Geologia**.
     
-    Obiettivo: Mappatura geometrica della scena.
-    1. Mappa le distanze apparenti tra gli elementi chiave.
-    2. Calcola forme, densità e direzioni degli oggetti nello spazio.
-    3. Descrivi la disposizione topologica senza interpretare le intenzioni (es. "oggetto A equidistante da B e C", non "l'oggetto A è stato lanciato").
-    
-    Output richiesto: Descrizione topologica e geometrica della scena (angoli, distanze relative, distribuzione).
+    ISTRUZIONI:
+    - Identifica la tecnica di realizzazione: Incisione (a V, a U), Picchiettatura (diretta/indiretta), Graffito, Pittura.
+    - Analizza la litologia del supporto: Durezza presunta, tessitura.
+    - Cerca tracce degli strumenti usati (litici o metallici).
+    - Valuta la patina di alterazione superficiale ("Varnish") per ipotizzare l'antichità relativa.
   `,
-  [AnalysisType.TRAJECTORY]: `
-    Esegui una Analisi Geometrica delle Tracce (Simulazione BPA).
+  [AnalysisMode.CULTURAL_COMPARE]: `
+    Focus Analitico: **Confronto Culturale ed Etnografico**.
     
-    Obiettivo: Studio della fisica delle forme e dei fluidi.
-    1. Stima l'orientamento delle tracce: tratta la forma allungata delle gocce/macchie come vettori di movimento.
-    2. Calcola l'angolo d'impatto apparente: valuta quanto la traccia si distende (rotonda vs ellittica).
-    3. Ricostruisci un ventaglio di traiettorie lineari possibili (fili tesi nell'aria) verso un'area di convergenza.
-    4. NON raccontare la storia dell'evento. Fornisci solo dati geometrici su provenienza e angolazione.
-    
-    Output richiesto: Rapporto tecnico su angoli di impatto, direzionalità vettoriale delle tracce e area di origine stimata.
+    ISTRUZIONI:
+    - Confronta i motivi visibili con stili noti (es. Arte Camuna, Arte Levantina, Megalitismo Atlantico, Sahariana).
+    - Suggerisci possibili paralleli culturali.
+    - Se l'immagine è ambigua, proponi più chiavi di lettura basate su culture diverse.
   `,
-  [AnalysisType.FULL_REPORT]: `
-    GENERAZIONE DOSSIER FORENSE COMPLETO (MODALITÀ ESTESA).
+  [AnalysisMode.EXPERT_VALIDATION]: `
+    Analisi Metodologica Avanzata (Processuale/Post-Processuale).
     
-    Analizza l'immagine fornita ed elabora un "Rapporto Tecnico di Scena" completo e formale.
-    
-    Struttura obbligatoria del documento:
-    
-    1. INTESTAZIONE TECNICA
-       - Data e ora analisi: [INSERISCI DATA FORNITA NEL CONTESTO]
-       - ID Riferimento: [Genera un ID alfanumerico casuale]
-       - Classificazione Immagine: (es. Macro, Grandangolo, Dettaglio)
-    
-    2. ANALISI ANOMALIE VISIVE
-       - Elenco dettagliato elementi estranei o di interesse.
-       - Descrizione stato dei luoghi.
-    
-    3. CLASSIFICAZIONE MATERICA
-       - Analisi texture e sostanze visibili (solidi, fluidi, biologici presunti).
-    
-    4. RILIEVI GEOMETRICI E SPAZIALI
-       - Posizionamento relativo degli elementi.
-       - Analisi prospettica.
-    
-    5. STUDIO TRAIETTORIE E DINAMICA (Ipotesi Tecnica)
-       - Vettori direzionali ricavati da macchie/oggetti.
-       - Angoli di impatto stimati.
-    
-    6. NOTE CONCLUSIVE
-       - Sintesi tecnica oggettiva.
-       - Raccomandazioni per analisi di laboratorio.
-       
-    IMPORTANTE: Sii estremamente dettagliato, verboso e preciso. Usa terminologia accademica/forense.
+    ISTRUZIONI:
+    - Valuta il grado di leggibilità e affidabilità dei segni distinguendo tra certo, probabile e ipotetico.
+    - Tenta una ricostruzione della "Chaîne Opératoire": scelta della superficie -> preparazione -> esecuzione -> uso rituale/pubblico.
+    - Valuta il rapporto tra il segno e la topografia naturale della roccia (es. fessure usate come linee di terra o parti del corpo).
   `
 };
 
-export const analyzeImage = async (
-  base64Data: string,
-  mimeType: string,
-  analysisType: AnalysisType,
-  customInstruction?: string
-): Promise<string> => {
+export const analyzeImage = async (files: File[], mode: AnalysisMode, userNotes?: string): Promise<string> => {
   try {
-    const modelId = 'gemini-2.5-flash'; 
-
-    // Calcoliamo la data corrente per iniettarla nel prompt
-    const now = new Date().toLocaleString('it-IT', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit' 
-    });
-
-    // Aggiungiamo il contesto temporale esplicito al prompt
-    const dateContext = `\n\n[PARAMETRI TEMPORALI SISTEMA]\nDATA CORRENTE REALE: ${now}.\nUsa TASSATIVAMENTE questa data nell'intestazione del rapporto. NON inventare date passate o future.`;
-    
-    // Integrazione delle istruzioni personalizzate
-    const instructionContext = customInstruction 
-        ? `\n\n[NOTA OPERATIVA AGGIUNTIVA DALL'UTENTE]\nL'utente ha aggiunto la seguente richiesta specifica per questa analisi: "${customInstruction}".\nIntegra questa richiesta nell'analisi mantenendo il rigore scientifico e tecnico.` 
-        : "";
-
-    const finalPrompt = PROMPTS[analysisType] + instructionContext + dateContext;
-
-    const response = await ai.models.generateContent({
-      model: modelId,
-      contents: {
-        parts: [
-          {
-            inlineData: {
-              mimeType: mimeType,
-              data: base64Data,
-            },
-          },
-          {
-            text: finalPrompt,
-          },
-        ],
-      },
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.1, 
-        maxOutputTokens: 8192,
-        safetySettings: [
-          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_CIVIC_INTEGRITY', threshold: 'BLOCK_NONE' }
-        ]
-      },
-    });
-
-    if (response.candidates && response.candidates.length > 0) {
-        const candidate = response.candidates[0];
-        
-        if (candidate.finishReason === 'STOP' || candidate.finishReason === 'MAX_TOKENS') {
-            let text = response.text || "";
-            if (candidate.finishReason === 'MAX_TOKENS') {
-                text += "\n\n[ATTENZIONE: RAPPORTO TRONCATO PER RAGGIUNGIMENTO LIMITE MASSIMO DI LUNGHEZZA]";
-            }
-            if (!text) return "Nessun testo generato.";
-            return text;
-        }
-        
-        if (candidate.finishReason === 'SAFETY') {
-             return `[ACCESSO NEGATO] Il protocollo di sicurezza ha impedito l'analisi. L'immagine contiene elementi classificati come "High Severity".`;
-        }
-
-        return `[ERRORE SISTEMA] Analisi terminata con motivo imprevisto: ${candidate.finishReason}`;
+    if (!process.env.API_KEY) {
+      throw new Error("API Key non configurata.");
     }
 
-    return "Nessuna risposta dal server.";
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
+    // Converti TUTTI i file in parti generative
+    const imagePartsPromise = files.map(file => fileToGenerativePart(file));
+    const imageParts = await Promise.all(imagePartsPromise);
+    
+    let promptText = PROMPTS[mode];
+
+    if (files.length > 1) {
+        promptText += `\n\nNOTA: Ti sono state fornite ${files.length} immagini. Considerale come parte dello stesso pannello roccioso o sito. Usale tutte per un'analisi incrociata (es. diverse luci, dettagli e totali).`;
+    }
+
+    if (userNotes && userNotes.trim() !== "") {
+      promptText += `
+        \n\n--- NOTE DI CAMPO (ARCHEOLOGO) ---
+        "${userNotes}"
+        
+        ISTRUZIONI:
+        Integra queste note nel contesto (localizzazione, orientamento, datazione stratigrafica se nota).
+        --------------------------------------------------\n
+      `;
+    } else {
+        promptText += `\n\n(Nessun contesto fornito: procedere con analisi "Blind" morfologica pura).`;
+    }
+    
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        {
+            role: 'user',
+            parts: [
+                ...imageParts, // Spread di tutte le immagini
+                { text: promptText }
+            ]
+        }
+      ],
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
+        temperature: 0.2, // Basso per rigore scientifico
+      }
+    });
+
+    return response.text || "Il modello non ha rilevato elementi significativi per un'analisi archeologica.";
   } catch (error) {
-    console.error("Errore durante l'analisi Gemini:", error);
-    return "ERRORE CRITICO DI RETE: Impossibile connettersi al motore neurale.";
+    console.error("Errore analisi:", error);
+    throw new Error("Errore durante l'elaborazione dei dati rupestri.");
   }
 };

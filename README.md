@@ -1,52 +1,113 @@
-# FotoCrime - Analisi Forense Assistita da IA
+# PetraScan 🗿 - Analisi Forense di Arte Rupestre con IA
 
-**Autore:** Claudio Arena  
-**Versione:** 1.0.0  
-**Stato:** Rilascio Stabile
+**PetraScan** è un'applicazione web professionale progettata per archeologi, ricercatori e appassionati di preistoria. Utilizza l'intelligenza artificiale generativa (Google Gemini 2.5) per assistere nell'analisi, catalogazione e interpretazione di arte rupestre, petroglifi, strutture megalitiche e tracce di lavorazione litica.
+
+L'applicazione adotta un approccio "forense", combinando l'osservazione fenomenologica rigorosa con capacità di visione artificiale avanzata.
+
+---
+
+## 🌟 Funzionalità Principali
+
+### 🔍 Analisi Multi-Modale
+L'applicazione offre diverse modalità di indagine, ciascuna guidata da prompt ingegnerizzati specificamente per simulare diversi specialisti:
+
+1.  **Report Completo (Standard)**: Un'analisi a 360° che copre morfologia, statica, tafonomia e ipotesi funzionale.
+2.  **Simbologia**: Ricerca mirata di grafemi, coppelle, antropomorfi e pattern geometrici, distinguendo tra segni antropici e pareidolia.
+3.  **Tecnica & Geologia**: Focus petrografico (litologia, fratturazione) e tecnologico (tracce d'uso, sbozzatura).
+4.  **Confronto Culturale**: Analisi comparativa speculativa con culture note (es. Megalitismo Atlantico, Nuragico, Camuno).
+5.  **Analisi Specialistica**: Modalità avanzata che integra metodologie di *Binford*, *Renfrew* e *Hodder* per una validazione scientifica profonda (Livelli di confidenza Alpha/Beta/Gamma).
+
+### 🧠 Metodologia "Chaîne Opératoire"
+Il cuore del sistema non si limita a descrivere l'immagine, ma tenta di ricostruire la **catena operativa**:
+*   Estrazione della materia prima.
+*   Trasporto.
+*   Lavorazione (tecnologia litica).
+*   Uso e Abbandono (processi post-deposizionali).
+
+### ⚖️ Blind Test vs Analisi Assistita
+*   **Modalità AUTO (Blind Test)**: L'IA analizza l'immagine senza bias esterni, basandosi solo sull'evidenza visiva.
+*   **Modalità MANUALE**: L'utente può fornire note di scavo, coordinate o contesto storico che l'IA integrerà nel report finale.
+
+### 📄 Export Professionale
+*   **Markdown (.md)**: Per archiviazione digitale e modifica rapida.
+*   **Microsoft Word (.doc)**: Formattato automaticamente con intestazioni, disclaimer e metadati per l'inclusione in pubblicazioni o relazioni tecniche.
 
 ---
 
-## 🔍 Descrizione del Progetto
+## 🛠️ Stack Tecnologico
 
-**FotoCrime** è un'applicazione web professionale progettata per l'analisi tecnica e geometrica di immagini relative a scene del crimine o contesti forensi. Utilizzando la potenza del modello neurale Gemini 2.5 Flash, l'applicazione funge da "assistente digitale" per rilevare dettagli che potrebbero sfuggire all'occhio umano, mantenendo un approccio rigorosamente scientifico e non interpretativo.
-
-L'applicazione è costruita con un'interfaccia "Dark Mode" ad alto contrasto, ottimizzata per l'uso in ambienti con scarsa illuminazione o sale operative.
-
-## 🚀 Funzionalità Principali
-
-### 1. Analisi Anomalie Visive
-Il sistema scansiona l'immagine alla ricerca di discrepanze cromatiche, oggetti fuori posto o dettagli che deviano dal pattern ambientale standard.
-
-### 2. Classificazione Sostanze
-Identificazione visiva (non chimica) di materiali, fluidi e texture. Distingue tra liquidi viscosi, polveri, frammenti solidi e tessuti, fornendo descrizioni fisiche dettagliate.
-
-### 3. Ricostruzione Spaziale
-Mappatura geometrica della scena. Calcola distanze relative, densità degli oggetti e prospettive per fornire una comprensione topologica dell'ambiente.
-
-### 4. Analisi Traiettorie (Simulazione BPA)
-Studio vettoriale delle tracce (macchie, spruzzi). Il modello stima angoli di impatto e direzioni di provenienza basandosi sulla forma geometrica delle evidenze (ellitticità, code, satelliti).
-
-### 5. Dossier Forense Completo
-Generazione di un rapporto onnicomprensivo che include tutti i punti precedenti, formattato come documento ufficiale con intestazione tecnica, ID univoco e note conclusive.
-
-### 6. Export Documentale
-Possibilità di esportare i risultati delle analisi in formato **PDF** e **DOCX** (Word), impaginati professionalmente con font monospaziati (Courier) dimensione 12pt.
-
-### 7. Strumenti di Visualizzazione
-- **Zoom Forense:** Modalità lente d'ingrandimento (2.5x) per ispezionare i dettagli dell'immagine senza perdere la risoluzione.
-- **Layout Fisso:** L'immagine di riferimento rimane sempre visibile durante la lettura dei rapporti lunghi.
-
-## 🛠 Note Tecniche
-
-*   **Engine IA:** Google Gemini 2.5 Flash
-*   **Framework:** React 19
-*   **Styling:** Tailwind CSS
-*   **Sicurezza:** I filtri di sicurezza standard sono stati calibrati su `BLOCK_NONE` per permettere l'analisi di materiale forense sensibile (sangue, ferite, armi) necessario per lo scopo dell'applicazione.
-*   **Privacy:** Le immagini vengono processate in tempo reale e non vengono salvate su database permanenti dall'applicazione client.
-
-## ⚠️ Disclaimer Legale
-
-Questo software è uno strumento di supporto all'analisi geometrica. I risultati generati dall'IA **non costituiscono perizia forense certificata** e devono essere sempre validati da personale umano qualificato e specialisti del settore. L'IA non deduce colpevolezze né moventi.
+*   **Frontend**: React 19, TypeScript.
+*   **Styling**: Tailwind CSS (Design System "Dark Stone" per ridurre l'affaticamento visivo in ambienti con poca luce).
+*   **AI Engine**: Google GenAI SDK (`@google/genai`) con modello `gemini-2.5-flash`.
+*   **Icons**: Lucide React.
+*   **Build Tool**: Vite (implicito dalla struttura).
 
 ---
-© 2025 Claudio Arena. All Rights Reserved.
+
+## 🚀 Installazione e Avvio
+
+### Prerequisiti
+*   Node.js (v18 o superiore)
+*   Una API Key valida di Google Gemini (AI Studio).
+
+### Setup
+
+1.  **Clona il repository** (o scarica i file sorgente):
+    ```bash
+    git clone https://github.com/tuo-user/petrascan.git
+    cd petrascan
+    ```
+
+2.  **Installa le dipendenze**:
+    ```bash
+    npm install
+    ```
+
+3.  **Configurazione API Key**:
+    L'applicazione richiede che la variabile d'ambiente `API_KEY` sia iniettata nel processo di build o runtime.
+    Crea un file `.env` nella root del progetto:
+    ```env
+    API_KEY=la_tua_chiave_gemini_qui
+    ```
+
+4.  **Avvia l'applicazione**:
+    ```bash
+    npm start
+    ```
+    L'app sarà disponibile su `http://localhost:3000` (o altra porta definita dal bundler).
+
+---
+
+## 📖 Guida all'Uso
+
+1.  **Caricamento**: Trascina una foto del reperto nell'area dedicata o clicca "Seleziona File".
+2.  **Contesto**:
+    *   Lascia su **AUTO** per un'analisi oggettiva.
+    *   Seleziona **MANUALE** per inserire note (es. *"Ritrovamento in Val Camonica, orientamento Sud-Est"*).
+3.  **Analisi**: Scegli il tipo di analisi dal pannello di controllo a destra (es. *Tecnica & Geo*).
+4.  **Attesa**: Il sistema simulerà i passaggi cognitivi (Scansione Morfologica -> Inferenza -> Validazione).
+5.  **Risultato**: Leggi il report generato. Puoi zoomare l'immagine originale per verificare i dettagli citati nel testo.
+6.  **Export**: Scarica il report in formato Word o Markdown.
+
+---
+
+## ⚠️ Disclaimer Scientifico e Legale
+
+PetraScan è uno strumento di **supporto alla ricerca**. 
+
+*   **Non costituisce perizia legale.**
+*   I risultati sono generati da un modello probabilistico (LLM) e possono contenere "allucinazioni" (interpretazione errata di fratture naturali come segni antropici).
+*   È imperativo che ogni risultato sia validato *in situ* da un archeologo qualificato.
+
+---
+
+## 🎨 Design System
+
+L'interfaccia utilizza una palette cromatica ispirata alla pietra e alla terra:
+*   **Stone 950/900**: Background (simula l'oscurità di una grotta o l'ambiente notturno).
+*   **Amber 600**: Accenti (richiama il colore dell'ocra rossa usata nel paleolitico o la luce delle torce).
+*   **Font**: *Inter* per l'UI, *Courier Prime* per i report (stile macchina da scrivere/documento tecnico).
+
+---
+
+**Autore**: Progetto generato per analisi forense digitale.

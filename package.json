@@ -1,5 +1,5 @@
 {
-  "name": "fotocrime",
+  "name": "petrascan-analisi-arte-rupestre",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,9 +11,8 @@
   "dependencies": {
     "lucide-react": "^0.554.0",
     "react": "^19.2.0",
-    "@google/genai": "^1.30.0",
     "react-dom": "^19.2.0",
-    "jspdf": "^2.5.1"
+    "@google/genai": "^1.30.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
