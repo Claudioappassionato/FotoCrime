@@ -33,7 +33,8 @@ export default function App() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
+      // Fix: Explicitly type the array conversion to avoid 'unknown' inference
+      const newFiles: File[] = Array.from(e.target.files);
       
       // Cleanup old URLs
       imageUrls.forEach(url => URL.revokeObjectURL(url));

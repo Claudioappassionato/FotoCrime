@@ -44,7 +44,10 @@ const PROMPTS: Record<AnalysisMode, string> = {
     2. **Inventario dei Segni**: Elenco sistematico delle figure visibili (antropomorfi, zoomorfi, geometrici, coppelle).
     3. **Stato di Conservazione**: Patine, licheni, sfaldamento, erosione.
     4. **Correlazione Immagini**: Se presenti più foto, descrivi come le diverse angolazioni/luci rivelano dettagli differenti (es. luce radente).
-    5. **Ipotesi Cronologica Preliminare**: Basata sullo stile (es. Neolitico, Età del Bronzo, Età del Ferro) con le dovute cautele.
+    5. **Inquadramento Crono-Culturale Dettagliato**: 
+       - Fornisci un ventaglio cronologico probabile (es. Calcolitico finale - Antica Età del Bronzo).
+       - Cita potenziali "Facies Culturali" di appartenenza.
+       - Menziona scoperte archeologiche note in contesti geografici simili che potrebbero fungere da confronto (parallelismi stilistici diretti).
   `,
   [AnalysisMode.SYMBOLOGY]: `
     Focus Analitico: **Simbologia e Iconografia**.
@@ -66,12 +69,13 @@ const PROMPTS: Record<AnalysisMode, string> = {
     - Valuta la patina di alterazione superficiale ("Varnish") per ipotizzare l'antichità relativa.
   `,
   [AnalysisMode.CULTURAL_COMPARE]: `
-    Focus Analitico: **Confronto Culturale ed Etnografico**.
+    Focus Analitico: **Confronto Culturale e Timeline Comparata**.
     
     ISTRUZIONI:
-    - Confronta i motivi visibili con stili noti (es. Arte Camuna, Arte Levantina, Megalitismo Atlantico, Sahariana).
-    - Suggerisci possibili paralleli culturali.
-    - Se l'immagine è ambigua, proponi più chiavi di lettura basate su culture diverse.
+    - Confronta i motivi visibili con stili noti (es. Arte Camuna, Arte Levantina, Megalitismo Atlantico, Arte Sahariana).
+    - **Timeline Contestuale**: Inserisci il reperto in una linea temporale, correlandolo con periodi archeologici maggiori (es. transizione Mesolitico-Neolitico).
+    - **Cross-Referencing Geografico**: Cita esplicitamente regioni o siti specifici (nazionali o internazionali) che presentano iconografie affini.
+    - Se l'immagine è ambigua, proponi ipotesi basate su diverse aree di influenza (es. "Influenza Alpina vs Influenza Mediterranea").
   `,
   [AnalysisMode.EXPERT_VALIDATION]: `
     Analisi Metodologica Avanzata (Processuale/Post-Processuale).
